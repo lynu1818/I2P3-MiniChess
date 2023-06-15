@@ -80,6 +80,7 @@ State* State::next_state(Move move){
   if(moved == 1 && (to.first==BOARD_H-1 || to.first==0)){
     moved = 5;
   }
+  //eat opponent's piece
   if(next.board[1-this->player][to.first][to.second]){
     next.board[1-this->player][to.first][to.second] = 0;
   }

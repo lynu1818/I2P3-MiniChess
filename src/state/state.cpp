@@ -13,7 +13,51 @@
  */
 int State::evaluate(){
   // [TODO] design your own evaluation function
-  return 0;
+  int self_value = 0;
+  int oppn_value = 0;
+  auto self_board = this->board.board[this->player];
+  auto oppn_board = this->board.board[1 - this->player];
+  int now_piece;
+  for(int i=0;i<BOARD_W;i++){
+    for(int j=0;j<BOARD_H;j++){
+      if((now_piece=self_board[i][j])){
+        switch(now_piece){
+          case '1': //pawn
+            self_value += 10;
+            break;
+          case '2': //rook
+            self_value += 30;
+          case '3': //knight
+            self_value += 50;
+          case '4': //bishop
+            self_value += 70;
+          case '5': //queen
+            self_value += 200;
+          case '6': //king
+            self_value += 5000;
+        }
+      }
+      if((now_piece=oppn_board[i][j])){
+        switch(now_piece){
+          case '1': //pawn
+            oppn_value += 10;
+            break;
+          case '2': //rook
+            oppn_value += 30;
+          case '3': //knight
+            oppn_value += 50;
+          case '4': //bishop
+            oppn_value += 70;
+          case '5': //queen
+            oppn_value += 200;
+          case '6': //king
+            oppn_value += 5000;
+        }
+      }
+    }
+  }
+  
+  return self_value - oppn_value;
 }
 
 
