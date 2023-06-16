@@ -304,11 +304,11 @@ std::string State::encode_output(){
     for(int j=0; j<BOARD_W; j+=1){
       ss << "│ ";
       if((now_piece = this->board.board[0][i][j])){
-        ss << std::string(PIECE_TABLE[0][now_piece]) << " ";
+        ss << std::string(piece_table[0][now_piece]) << " ";
       }else if((now_piece = this->board.board[1][i][j])){
-        ss << std::string(PIECE_TABLE[1][now_piece]) << " ";
+        ss << std::string(piece_table[1][now_piece]) << " ";
       }else{
-        ss << std::string(PIECE_TABLE[0][0]) << " ";
+        ss << std::string(piece_table[0][0]) << " ";
       }
     }
     ss << "│ │ " << y_axis[i] << " │\n";
@@ -381,16 +381,16 @@ void launch_executable(std::string filename) {
 
 
 bool valid_move(Move move, std::vector<Move>& legal_moves){
+  for(Move mv: legal_moves){
+    if(mv==move){
+      return true;
+    }
+  }
   if(move.first.first>BOARD_H || move.first.second>BOARD_H){
     return false;
   }
   if(move.second.first>BOARD_W || move.second.second>BOARD_W){
     return false;
-  }
-  for(Move mv: legal_moves){
-    if(mv==move){
-      return true;
-    }
   }
   return false;
 }
@@ -407,6 +407,8 @@ int main(int argc, char** argv) {
   
   std::cout << "Player White File: " << player_filename[1] << std::endl;
   std::cout << "Player Black File: " << player_filename[2] << std::endl;
+  log << "Player White File: " << player_filename[1] << std::endl;
+  log << "Player Black File: " << player_filename[2] << std::endl;
   
   State game; game.get_legal_actions();
   State *temp;

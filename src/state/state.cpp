@@ -23,35 +23,35 @@ int State::evaluate(){
       if((now_piece=self_board[i][j])){
         switch(now_piece){
           case '1': //pawn
-            self_value += 10;
+            self_value += 1;
             break;
           case '2': //rook
-            self_value += 30;
+            self_value += 5;
           case '3': //knight
-            self_value += 50;
+            self_value += 3;
           case '4': //bishop
-            self_value += 70;
+            self_value += 3;
           case '5': //queen
-            self_value += 200;
+            self_value += 9;
           case '6': //king
-            self_value += 5000;
+            self_value += INT32_MAX;
         }
       }
       if((now_piece=oppn_board[i][j])){
         switch(now_piece){
           case '1': //pawn
-            oppn_value += 10;
+            oppn_value += 1;
             break;
           case '2': //rook
-            oppn_value += 30;
+            oppn_value += 5;
           case '3': //knight
-            oppn_value += 50;
+            oppn_value += 3;
           case '4': //bishop
-            oppn_value += 70;
+            oppn_value += 3;
           case '5': //queen
-            oppn_value += 200;
+            oppn_value += 9;
           case '6': //king
-            oppn_value += 5000;
+            oppn_value += INT32_MAX;
         }
       }
     }
@@ -256,10 +256,11 @@ void State::get_legal_actions(){
 }
 
 
-const char piece_table[2][7][5] = {
-  {" ", "♙", "♖", "♘", "♗", "♕", "♔"},
-  {" ", "♟", "♜", "♞", "♝", "♛", "♚"}
-};
+// const char piece_table[2][7][5] = {
+//   {" ", "♙", "♖", "♘", "♗", "♕", "♔"},
+//   {" ", "♟", "♜", "♞", "♝", "♛", "♚"}
+// };
+
 /**
  * @brief encode the output for command line output
  * 
