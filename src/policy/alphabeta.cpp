@@ -22,7 +22,6 @@ Move Alphabeta::get_move(State *state, int depth){
     if((*next_state)->value == maximizing_value){
       return (*next_state)->prev_move;
     }
-    else continue;
   }
   // auto actions = state->legal_actions;
   // return actions[(rand()+depth)%actions.size()];

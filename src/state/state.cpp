@@ -13,51 +13,98 @@
  */
 int State::evaluate(){
   // [TODO] design your own evaluation function
-  int self_value = 0;
-  int oppn_value = 0;
+  int score = 0;
+  int piececount = 0;
+  int kingRow, kingCol;
   auto self_board = this->board.board[this->player];
   auto oppn_board = this->board.board[1 - this->player];
   int now_piece;
-  for(int i=0;i<BOARD_W;i++){
-    for(int j=0;j<BOARD_H;j++){
+  for(int i=0;i<BOARD_H;i++){
+    for(int j=0;j<BOARD_W;j++){
       if((now_piece=self_board[i][j])){
+        piececount++;
         switch(now_piece){
           case '1': //pawn
-            self_value += 1;
+            score += 1;
             break;
           case '2': //rook
-            self_value += 5;
+            score += 5;
+            break;
           case '3': //knight
-            self_value += 3;
+            score += 3;
+            break;
           case '4': //bishop
-            self_value += 3;
+            score += 3;
+            break;
           case '5': //queen
-            self_value += 9;
+            score += 9;
+            break;
           case '6': //king
-            self_value += INT32_MAX;
+            score += 1000;
+            kingRow = i;
+            kingCol = j;
+            break;
+          default:
+            score += 0;
         }
       }
       if((now_piece=oppn_board[i][j])){
+        piececount++;
         switch(now_piece){
           case '1': //pawn
-            oppn_value += 1;
+            score -= 1;
             break;
           case '2': //rook
-            oppn_value += 5;
+            score -= 5;
+            break;
           case '3': //knight
-            oppn_value += 3;
+            score -= 3;
+            break;
           case '4': //bishop
-            oppn_value += 3;
+            score -= 3;
+            break;
           case '5': //queen
-            oppn_value += 9;
+            score -= 9;
+            break;
           case '6': //king
-            oppn_value += INT32_MAX;
+            score -= 1000;
+            break;
+          default:
+            score += 0;
         }
       }
     }
   }
-  
-  return self_value - oppn_value;
+
+  if(piececount > 8){ //centerControl
+    int centerControl = 0;
+    for(int i=1;i<=4;i++){
+      for(int j=1;j<=3;j++){
+        if((now_piece=self_board[i][j])) centerControl++;
+        else if((now_piece=oppn_board[i][j])) centerControl--;
+      }
+    }
+    score += centerControl;
+  }
+  else{ //kingSafety
+    int kingSafety = 0;
+    int threats = 0;
+    for(int i=-1;i<=1;i++){
+      for(int j=-1;j<=1;j++){
+        if(i==0 && j==0) continue;
+        int row = kingRow + i;
+        int col = kingCol + j;
+        if(row >= 0 && row < BOARD_H && col >= 0 && col < BOARD_W){
+          if((now_piece=oppn_board[row][col])) threats++;
+        }
+      }
+    }
+    kingSafety -= threats;
+    score -= kingSafety;
+  }
+
+
+  return score;
 }
 
 
@@ -127,8 +174,8 @@ void State::get_legal_actions(){
   auto oppn_board = this->board.board[1 - this->player];
   
   int now_piece, oppn_piece;
-  for(int i=0; i<BOARD_H; i+=1){
-    for(int j=0; j<BOARD_W; j+=1){
+  for(int i=0; i<BOARD_H; i++){
+    for(int j=0; j<BOARD_W; j++){
       if((now_piece=self_board[i][j])){
         // std::cout << this->player << "," << now_piece << ' ';
         switch (now_piece){
