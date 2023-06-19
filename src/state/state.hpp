@@ -56,7 +56,7 @@ class State{
     State(Board board): board(board){};
     State(Board board, int player): board(board), player(player){};
     
-    int evaluate();
+    int evaluate(int player);
     int countThreats(char oppn_board[BOARD_H][BOARD_W], char self_board[BOARD_H][BOARD_W], int kingRow, int kingCol);
     int countPawnThreats(char oppn_board[BOARD_H][BOARD_W], char self_board[BOARD_H][BOARD_W], int kingRow, int kingCol);
     int countKnightThreats(char oppn_board[BOARD_H][BOARD_W], char self_board[BOARD_H][BOARD_W], int kingRow, int kingCol);

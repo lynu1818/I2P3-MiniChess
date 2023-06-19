@@ -171,14 +171,14 @@ bool State::isUndevelopedPiece(int now_piece, int row, int col, bool self){
   }
 }
 
-int State::evaluate(){
+int State::evaluate(int player){
   // [TODO] design your own evaluation function
   int score = 0;
   //int piececount = 0;
   int kingRow, kingCol;
   //int self_undev = 0, oppn_undev = 0;
-  auto self_board = this->board.board[this->player];
-  auto oppn_board = this->board.board[1 - this->player];
+  auto self_board = this->board.board[player];
+  auto oppn_board = this->board.board[1 - player];
   int now_piece;
   for(int i=0;i<BOARD_H;i++){
     for(int j=0;j<BOARD_W;j++){
@@ -250,10 +250,10 @@ int State::evaluate(){
   // }
   // else{ //kingSafety
     //int kingSafety = 0;
-    int threats = State::countThreats(oppn_board, self_board, kingRow, kingCol);
+    //int threats = State::countThreats(oppn_board, self_board, kingRow, kingCol);
     //kingSafety -= threats;
     //score = score - self_undev*2 + oppn_undev*2;
-    score -= threats * 10;
+    //score -= threats * 10;
   // }
 
   return score;
