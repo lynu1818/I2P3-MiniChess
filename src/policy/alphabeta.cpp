@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <algorithm>
+#include <climits>
 
 #include "../state/state.hpp"
 #include "./alphabeta.hpp"
@@ -17,14 +18,7 @@ Move Alphabeta::get_move(State *state, int depth){
     state->get_legal_actions();
   
   int maximizing_value = Alphabeta::alphabeta(state, depth, INT32_MIN, INT32_MAX, true);
-  auto next_state = state->legal_next_states.begin();
-  for(;next_state != state->legal_next_states.end();next_state++){
-    if((*next_state)->value == maximizing_value){
-      return (*next_state)->prev_move;
-    }
-  }
-  // auto actions = state->legal_actions;
-  // return actions[(rand()+depth)%actions.size()];
+  return state->prev_move;
 }
 
 int Alphabeta::alphabeta(State *state, int depth, int alpha, int beta, bool maximizingPlayer){
@@ -38,27 +32,32 @@ int Alphabeta::alphabeta(State *state, int depth, int alpha, int beta, bool maxi
     tmp->prev_move = (*actions);
     state->legal_next_states.push_back(tmp);
   }
-  if(depth == 0 || state->game_state == WIN ||state->game_state == DRAW){
+
+  if(depth == 0 || state->game_state == WIN){
     return state->evaluate();
   }
   if(maximizingPlayer){
-    state->value = INT32_MIN;
-    auto next_state = state->legal_next_states.begin();
-    for(;next_state != state->legal_next_states.end();next_state++){
-        state->value = std::max(state->value, alphabeta(*next_state, depth-1, alpha, beta, false));
-        alpha = std::max(alpha, state->value);
-        if(alpha >= beta) break;
+    for(Move actions: state->legal_actions){
+      State *next_state = state->next_state(actions);
+      next_state->prev_move = actions;
+      int val = alphabeta(next_state, depth-1, alpha, beta, false);
+      //if(val >= bestValue && depth == 3) state->prev_move = next_state->prev_move;
+      if(alpha < val && depth == 7) state->prev_move = next_state->prev_move;
+      alpha = std::max(alpha, val);
+      if(alpha >= beta) break;
     }
-    return state->value;
+    return alpha;
   }
   else{
-    state->value = INT32_MAX;
-    auto next_state = state->legal_next_states.begin();
-    for(;next_state != state->legal_next_states.end();next_state++){
-        state->value = std::min(state->value, alphabeta(*next_state, depth-1, alpha, beta, true));
-        beta = std::min(beta, state->value);
-        if(beta <= alpha) break;
+    for(Move actions: state->legal_actions){
+      State *next_state = state->next_state(actions);
+      next_state->prev_move = actions;
+      int val = alphabeta(next_state, depth-1, alpha, beta, true);
+      //if(val <= bestValue && depth == 3) state->prev_move = next_state->prev_move;
+      if(beta > val && depth == 7) state->prev_move = next_state->prev_move;
+      beta = std::min(beta, val);
+      if(beta <= alpha) break;
     }
-    return state->value;
+    return beta;
   }
 }

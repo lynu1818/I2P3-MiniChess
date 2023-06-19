@@ -57,6 +57,13 @@ class State{
     State(Board board, int player): board(board), player(player){};
     
     int evaluate();
+    int countThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int kingCol);
+    int countPawnThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int kingCol);
+    int countKnightThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int kingCol);
+    int countBishopThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int kingCol);
+    int countRookThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int kingCol);
+    int countQueenThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int kingCol);
+    bool isUndevelopedPiece(int now_piece, int row, int col, bool self);
     State* next_state(Move move);
     void get_legal_actions();
     std::string encode_output();

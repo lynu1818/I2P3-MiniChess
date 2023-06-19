@@ -11,11 +11,165 @@
  * 
  * @return int 
  */
+
+static const int move_table_rook_bishop[8][7][2] = {
+  {{0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}},
+  {{0, -1}, {0, -2}, {0, -3}, {0, -4}, {0, -5}, {0, -6}, {0, -7}},
+  {{1, 0}, {2, 0}, {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}},
+  {{-1, 0}, {-2, 0}, {-3, 0}, {-4, 0}, {-5, 0}, {-6, 0}, {-7, 0}},
+  {{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}, {6, 6}, {7, 7}},
+  {{1, -1}, {2, -2}, {3, -3}, {4, -4}, {5, -5}, {6, -6}, {7, -7}},
+  {{-1, 1}, {-2, 2}, {-3, 3}, {-4, 4}, {-5, 5}, {-6, 6}, {-7, 7}},
+  {{-1, -1}, {-2, -2}, {-3, -3}, {-4, -4}, {-5, -5}, {-6, -6}, {-7, -7}},
+};
+static const int move_table_knight[8][2] = {
+  {1, 2}, {1, -2},
+  {-1, 2}, {-1, -2},
+  {2, 1}, {2, -1},
+  {-2, 1}, {-2, -1},
+};
+static const int move_table_king[8][2] = {
+  {1, 0}, {0, 1}, {-1, 0}, {0, -1}, 
+  {1, 1}, {1, -1}, {-1, 1}, {-1, -1},
+};
+
+
+
+int State::countThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int kingCol){
+  int threats = 0;
+  threats += State::countPawnThreats(oppn_board, kingRow, kingCol);
+  threats += State::countKnightThreats(oppn_board, kingRow, kingCol);
+  threats += State::countBishopThreats(oppn_board, kingRow, kingCol);
+  threats += State::countRookThreats(oppn_board, kingRow, kingCol);
+  threats += State::countQueenThreats(oppn_board, kingRow, kingCol);
+  return threats;
+}
+
+int State::countPawnThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int kingCol){
+  int threats = 0;
+
+  for(int i=-1;i<=1;i++){
+    for(int j=-1;j<=1;j++){
+      if(i==0 && j==0) continue;
+        int row = kingRow + i;
+        int col = kingCol + j;
+        if(row >= 0 && row < BOARD_H && col >= 0 && col < BOARD_W){
+          if((oppn_board[row][col]) == 1) threats++;
+      }
+    }
+  }
+
+  return threats;
+}
+
+int State::countKnightThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int kingCol){
+  int threats = 0;
+
+  int dir_x[8] = {-2, -1, 1, 2, 2, 1, -1, -2};
+  int dir_y[8] = {1, 2, 2, 1, -1, -2, -2, -1};
+
+  for(int i=0;i<8;i++){
+    int row = kingRow + dir_x[i];
+    int col = kingCol + dir_y[i];
+    if(row >= 0 && row < BOARD_H && col >= 0 && col < BOARD_W){
+      if((oppn_board[row][col]) == 3) threats++;
+    }
+  }
+
+  return threats;
+}
+
+int State::countBishopThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int kingCol){
+  int threats = 0;
+
+  for(int i=4;i<8;i++){
+    for(int j=0;j<7;j++){
+      int row = kingRow + move_table_rook_bishop[i][j][0];
+      int col = kingCol + move_table_rook_bishop[i][j][1];
+      if(row >= 0 && row < BOARD_H && col >= 0 && col < BOARD_W){
+        if((oppn_board[row][col]) == 4) threats++;
+      }
+    }
+  }
+
+  return threats;
+}
+
+int State::countRookThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int kingCol){
+  int threats = 0;
+
+  for(int i=0;i<4;i++){
+    for(int j=0;j<7;j++){
+      int row = kingRow + move_table_rook_bishop[i][j][0];
+      int col = kingCol + move_table_rook_bishop[i][j][1];
+      if(row >= 0 && row < BOARD_H && col >= 0 && col < BOARD_W){
+        if((oppn_board[row][col]) == 2) threats++;
+      }
+    }
+  }
+
+  return threats;
+}
+
+int State::countQueenThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int kingCol){
+  int threats = 0;
+
+  for(int i=0;i<8;i++){
+    for(int j=0;j<7;j++){
+      int row = kingRow + move_table_rook_bishop[i][j][0];
+      int col = kingCol + move_table_rook_bishop[i][j][1];
+      if(row >= 0 && row < BOARD_H && col >= 0 && col < BOARD_W){
+        if((oppn_board[row][col]) == 5) threats++;
+      }
+    }
+  }
+
+  return threats;
+}
+
+bool State::isUndevelopedPiece(int now_piece, int row, int col, bool self){
+  switch(now_piece){
+    case '1': //pawn
+      if(this->player == 0){
+        if(row == 4) return true;
+      }
+      else if(row == 1) return true;
+      break;
+    case '2': //rook
+      if(this->player == 0){
+        if(row == 5 && col == 0) return true;
+      }
+      else if(row == 0 && col == 4) return true;
+      break;
+    case '3': //knight
+      if(this->player == 0){
+        if(row == 5 && col == 1) return true;
+      }
+      else if(row == 0 && col == 3) return true;
+      break;
+    case '4': //bishop
+      if(this->player == 0){
+        if(row == 5 && col == 2) return true;
+      }
+      else if(row == 0 && col == 2) return true;
+      break;
+    case '5': //queen
+      if(this->player == 0){
+        if(row == 5 && col == 3) return true;
+      }
+      else if(row == 0 && col == 1) return true;
+      break;
+    defalut:
+      return false;
+  }
+}
+
 int State::evaluate(){
   // [TODO] design your own evaluation function
   int score = 0;
   int piececount = 0;
   int kingRow, kingCol;
+  int self_undev = 0, oppn_undev = 0;
   auto self_board = this->board.board[this->player];
   auto oppn_board = this->board.board[1 - this->player];
   int now_piece;
@@ -23,6 +177,7 @@ int State::evaluate(){
     for(int j=0;j<BOARD_W;j++){
       if((now_piece=self_board[i][j])){
         piececount++;
+        if(isUndevelopedPiece(now_piece, i, j, true)) self_undev++;
         switch(now_piece){
           case '1': //pawn
             score += 1;
@@ -40,7 +195,7 @@ int State::evaluate(){
             score += 9;
             break;
           case '6': //king
-            score += 1000;
+            score += 90;
             kingRow = i;
             kingCol = j;
             break;
@@ -49,7 +204,7 @@ int State::evaluate(){
         }
       }
       if((now_piece=oppn_board[i][j])){
-        piececount++;
+        if(isUndevelopedPiece(now_piece, i, j, false)) oppn_undev++;
         switch(now_piece){
           case '1': //pawn
             score -= 1;
@@ -67,7 +222,7 @@ int State::evaluate(){
             score -= 9;
             break;
           case '6': //king
-            score -= 1000;
+            score -= 90;
             break;
           default:
             score += 0;
@@ -76,33 +231,23 @@ int State::evaluate(){
     }
   }
 
-  if(piececount > 8){ //centerControl
-    int centerControl = 0;
-    for(int i=1;i<=4;i++){
-      for(int j=1;j<=3;j++){
-        if((now_piece=self_board[i][j])) centerControl++;
-        else if((now_piece=oppn_board[i][j])) centerControl--;
-      }
-    }
-    score += centerControl;
-  }
-  else{ //kingSafety
-    int kingSafety = 0;
-    int threats = 0;
-    for(int i=-1;i<=1;i++){
-      for(int j=-1;j<=1;j++){
-        if(i==0 && j==0) continue;
-        int row = kingRow + i;
-        int col = kingCol + j;
-        if(row >= 0 && row < BOARD_H && col >= 0 && col < BOARD_W){
-          if((now_piece=oppn_board[row][col])) threats++;
-        }
-      }
-    }
-    kingSafety -= threats;
-    score -= kingSafety;
-  }
-
+  // if(piececount > 6){ //centerControl
+  //   int centerControl = 0;
+  //   for(int i=1;i<=4;i++){
+  //     for(int j=1;j<=3;j++){
+  //       if((now_piece=self_board[i][j])) centerControl++;
+  //       else if((now_piece=oppn_board[i][j])) centerControl--;
+  //     }
+  //   }
+  //   score += centerControl;
+  // }
+  // else{ //kingSafety
+    //int kingSafety = 0;
+    //int threats = State::countThreats(oppn_board, kingRow, kingCol);
+    //kingSafety -= threats;
+    //score = score - self_undev*2 + oppn_undev*2;
+    //score -= threats * 10;
+  // }
 
   return score;
 }
@@ -138,26 +283,6 @@ State* State::next_state(Move move){
 }
 
 
-static const int move_table_rook_bishop[8][7][2] = {
-  {{0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}},
-  {{0, -1}, {0, -2}, {0, -3}, {0, -4}, {0, -5}, {0, -6}, {0, -7}},
-  {{1, 0}, {2, 0}, {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}},
-  {{-1, 0}, {-2, 0}, {-3, 0}, {-4, 0}, {-5, 0}, {-6, 0}, {-7, 0}},
-  {{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}, {6, 6}, {7, 7}},
-  {{1, -1}, {2, -2}, {3, -3}, {4, -4}, {5, -5}, {6, -6}, {7, -7}},
-  {{-1, 1}, {-2, 2}, {-3, 3}, {-4, 4}, {-5, 5}, {-6, 6}, {-7, 7}},
-  {{-1, -1}, {-2, -2}, {-3, -3}, {-4, -4}, {-5, -5}, {-6, -6}, {-7, -7}},
-};
-static const int move_table_knight[8][2] = {
-  {1, 2}, {1, -2},
-  {-1, 2}, {-1, -2},
-  {2, 1}, {2, -1},
-  {-2, 1}, {-2, -1},
-};
-static const int move_table_king[8][2] = {
-  {1, 0}, {0, 1}, {-1, 0}, {0, -1}, 
-  {1, 1}, {1, -1}, {-1, 1}, {-1, -1},
-};
 
 
 /**
