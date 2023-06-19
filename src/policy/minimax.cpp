@@ -35,7 +35,7 @@ int Minimax::minimax(State *state, int depth, bool maximizingPlayer){
       State *next_state = state->next_state(actions);
       next_state->prev_move = actions;
       int val = minimax(next_state, depth-1, false);
-      if(val > bestValue && depth == 3) state->prev_move = next_state->prev_move;
+      if(val > bestValue && depth == 4) state->prev_move = next_state->prev_move;
       bestValue = std::max(bestValue, val);
     }
     return bestValue;
@@ -46,7 +46,7 @@ int Minimax::minimax(State *state, int depth, bool maximizingPlayer){
       State *next_state = state->next_state(actions);
       next_state->prev_move = actions;
       int val = minimax(next_state, depth-1, true);
-      if(val < bestValue && depth == 3) state->prev_move = next_state->prev_move;
+      if(val < bestValue && depth == 4) state->prev_move = next_state->prev_move;
       bestValue = std::min(bestValue, val);
     }
     return bestValue;

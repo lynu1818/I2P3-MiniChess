@@ -35,26 +35,26 @@ static const int move_table_king[8][2] = {
 
 
 
-int State::countThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int kingCol){
+int State::countThreats(char oppn_board[BOARD_H][BOARD_W], char self_board[BOARD_H][BOARD_W], int kingRow, int kingCol){
   int threats = 0;
-  threats += State::countPawnThreats(oppn_board, kingRow, kingCol);
-  threats += State::countKnightThreats(oppn_board, kingRow, kingCol);
-  threats += State::countBishopThreats(oppn_board, kingRow, kingCol);
-  threats += State::countRookThreats(oppn_board, kingRow, kingCol);
-  threats += State::countQueenThreats(oppn_board, kingRow, kingCol);
+  threats += State::countPawnThreats(oppn_board, self_board, kingRow, kingCol);
+  threats += State::countKnightThreats(oppn_board, self_board, kingRow, kingCol);
+  threats += State::countBishopThreats(oppn_board, self_board, kingRow, kingCol);
+  threats += State::countRookThreats(oppn_board, self_board, kingRow, kingCol);
+  threats += State::countQueenThreats(oppn_board, self_board, kingRow, kingCol);
   return threats;
 }
 
-int State::countPawnThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int kingCol){
+int State::countPawnThreats(char oppn_board[BOARD_H][BOARD_W], char self_board[BOARD_H][BOARD_W],int kingRow, int kingCol){
   int threats = 0;
 
   for(int i=-1;i<=1;i++){
     for(int j=-1;j<=1;j++){
       if(i==0 && j==0) continue;
-        int row = kingRow + i;
-        int col = kingCol + j;
-        if(row >= 0 && row < BOARD_H && col >= 0 && col < BOARD_W){
-          if((oppn_board[row][col]) == 1) threats++;
+      int row = kingRow + i;
+      int col = kingCol + j;
+      if(row >= 0 && row < BOARD_H && col >= 0 && col < BOARD_W){
+        if((oppn_board[row][col]) == '1') threats++;
       }
     }
   }
@@ -62,7 +62,7 @@ int State::countPawnThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int 
   return threats;
 }
 
-int State::countKnightThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int kingCol){
+int State::countKnightThreats(char oppn_board[BOARD_H][BOARD_W], char self_board[BOARD_H][BOARD_W], int kingRow, int kingCol){
   int threats = 0;
 
   int dir_x[8] = {-2, -1, 1, 2, 2, 1, -1, -2};
@@ -72,22 +72,24 @@ int State::countKnightThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, in
     int row = kingRow + dir_x[i];
     int col = kingCol + dir_y[i];
     if(row >= 0 && row < BOARD_H && col >= 0 && col < BOARD_W){
-      if((oppn_board[row][col]) == 3) threats++;
+      if((oppn_board[row][col]) == '3') threats++;
     }
   }
 
   return threats;
 }
 
-int State::countBishopThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int kingCol){
+int State::countBishopThreats(char oppn_board[BOARD_H][BOARD_W], char self_board[BOARD_H][BOARD_W], int kingRow, int kingCol){
   int threats = 0;
 
   for(int i=4;i<8;i++){
-    for(int j=0;j<7;j++){
+    for(int j=0;j<5;j++){
       int row = kingRow + move_table_rook_bishop[i][j][0];
       int col = kingCol + move_table_rook_bishop[i][j][1];
       if(row >= 0 && row < BOARD_H && col >= 0 && col < BOARD_W){
-        if((oppn_board[row][col]) == 4) threats++;
+        if(oppn_board[row][col] != '4' && oppn_board[row][col] != '0')break;
+        else if(self_board[row][col] != '0') break;
+        if((oppn_board[row][col]) == '4') threats++;
       }
     }
   }
@@ -95,15 +97,18 @@ int State::countBishopThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, in
   return threats;
 }
 
-int State::countRookThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int kingCol){
+int State::countRookThreats(char oppn_board[BOARD_H][BOARD_W], char self_board[BOARD_H][BOARD_W], int kingRow, int kingCol){
   int threats = 0;
+  bool pathBlocked[4] = {false, false, false, false}; //up, down, right, left
 
   for(int i=0;i<4;i++){
-    for(int j=0;j<7;j++){
+    for(int j=0;j<5;j++){
       int row = kingRow + move_table_rook_bishop[i][j][0];
       int col = kingCol + move_table_rook_bishop[i][j][1];
       if(row >= 0 && row < BOARD_H && col >= 0 && col < BOARD_W){
-        if((oppn_board[row][col]) == 2) threats++;
+        if(oppn_board[row][col] != '2' && oppn_board[row][col] != '0')break;
+        else if(self_board[row][col] != '0') break;
+        else if((oppn_board[row][col]) == '2') threats++;
       }
     }
   }
@@ -111,15 +116,17 @@ int State::countRookThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int 
   return threats;
 }
 
-int State::countQueenThreats(char oppn_board[BOARD_H][BOARD_W], int kingRow, int kingCol){
+int State::countQueenThreats(char oppn_board[BOARD_H][BOARD_W], char self_board[BOARD_H][BOARD_W], int kingRow, int kingCol){
   int threats = 0;
 
   for(int i=0;i<8;i++){
-    for(int j=0;j<7;j++){
+    for(int j=0;j<5;j++){
       int row = kingRow + move_table_rook_bishop[i][j][0];
       int col = kingCol + move_table_rook_bishop[i][j][1];
       if(row >= 0 && row < BOARD_H && col >= 0 && col < BOARD_W){
-        if((oppn_board[row][col]) == 5) threats++;
+        if(oppn_board[row][col] != '5' && oppn_board[row][col] != '0')break;
+        else if(self_board[row][col] != '0') break;
+        if((oppn_board[row][col]) == '5') threats++;
       }
     }
   }
@@ -167,34 +174,34 @@ bool State::isUndevelopedPiece(int now_piece, int row, int col, bool self){
 int State::evaluate(){
   // [TODO] design your own evaluation function
   int score = 0;
-  int piececount = 0;
+  //int piececount = 0;
   int kingRow, kingCol;
-  int self_undev = 0, oppn_undev = 0;
+  //int self_undev = 0, oppn_undev = 0;
   auto self_board = this->board.board[this->player];
   auto oppn_board = this->board.board[1 - this->player];
   int now_piece;
   for(int i=0;i<BOARD_H;i++){
     for(int j=0;j<BOARD_W;j++){
       if((now_piece=self_board[i][j])){
-        piececount++;
-        if(isUndevelopedPiece(now_piece, i, j, true)) self_undev++;
+        //piececount++;
+        //if(isUndevelopedPiece(now_piece, i, j, true)) self_undev++;
         switch(now_piece){
-          case '1': //pawn
+          case 1: //pawn
             score += 1;
             break;
-          case '2': //rook
+          case 2: //rook
             score += 5;
             break;
-          case '3': //knight
+          case 3: //knight
             score += 3;
             break;
-          case '4': //bishop
+          case 4: //bishop
             score += 3;
             break;
-          case '5': //queen
+          case 5: //queen
             score += 9;
             break;
-          case '6': //king
+          case 6: //king
             score += 90;
             kingRow = i;
             kingCol = j;
@@ -204,24 +211,24 @@ int State::evaluate(){
         }
       }
       if((now_piece=oppn_board[i][j])){
-        if(isUndevelopedPiece(now_piece, i, j, false)) oppn_undev++;
+        //if(isUndevelopedPiece(now_piece, i, j, false)) oppn_undev++;
         switch(now_piece){
-          case '1': //pawn
+          case 1: //pawn
             score -= 1;
             break;
-          case '2': //rook
+          case 2: //rook
             score -= 5;
             break;
-          case '3': //knight
+          case 3: //knight
             score -= 3;
             break;
-          case '4': //bishop
+          case 4: //bishop
             score -= 3;
             break;
-          case '5': //queen
+          case 5: //queen
             score -= 9;
             break;
-          case '6': //king
+          case 6: //king
             score -= 90;
             break;
           default:
@@ -243,10 +250,10 @@ int State::evaluate(){
   // }
   // else{ //kingSafety
     //int kingSafety = 0;
-    //int threats = State::countThreats(oppn_board, kingRow, kingCol);
+    int threats = State::countThreats(oppn_board, self_board, kingRow, kingCol);
     //kingSafety -= threats;
     //score = score - self_undev*2 + oppn_undev*2;
-    //score -= threats * 10;
+    score -= threats * 10;
   // }
 
   return score;
