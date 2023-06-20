@@ -33,7 +33,7 @@ int Alphabeta::alphabeta(State *state, int depth, int alpha, int beta, int maxim
     state->legal_next_states.push_back(tmp);
   }
 
-  if(depth == 0 || state->game_state == WIN){
+  if(depth == 0 || !state->legal_actions.size()){
     return state->evaluate(maximizingPlayer);
   }
   if(state->player == maximizingPlayer){
@@ -42,7 +42,7 @@ int Alphabeta::alphabeta(State *state, int depth, int alpha, int beta, int maxim
       next_state->prev_move = actions;
       int val = alphabeta(next_state, depth-1, alpha, beta, maximizingPlayer);
       //if(val >= bestValue && depth == 3) state->prev_move = next_state->prev_move;
-      if(alpha < val && depth == 4) state->prev_move = next_state->prev_move;
+      if(alpha < val && depth == 3) state->prev_move = next_state->prev_move;
       alpha = std::max(alpha, val);
       if(alpha >= beta) break;
     }
@@ -54,7 +54,7 @@ int Alphabeta::alphabeta(State *state, int depth, int alpha, int beta, int maxim
       next_state->prev_move = actions;
       int val = alphabeta(next_state, depth-1, alpha, beta, maximizingPlayer);
       //if(val <= bestValue && depth == 3) state->prev_move = next_state->prev_move;
-      if(beta > val && depth == 4) state->prev_move = next_state->prev_move;
+      if(beta > val && depth == 3) state->prev_move = next_state->prev_move;
       beta = std::min(beta, val);
       if(beta <= alpha) break;
     }

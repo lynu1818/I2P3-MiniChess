@@ -26,10 +26,10 @@ int Minimax::minimax(State *state, int depth, int maximizingPlayer){
     state->get_legal_actions();
   
   
-  if(depth == 0 || state->game_state == WIN){
+  if(depth == 0 || !state->legal_actions.size()){
     return state->evaluate(maximizingPlayer);
   }
-  if(maximizingPlayer){
+  if(maximizingPlayer==state->player){
     int bestValue = INT_MIN;
     for(Move actions: state->legal_actions){
       State *next_state = state->next_state(actions);

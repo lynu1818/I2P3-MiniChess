@@ -250,10 +250,10 @@ int State::evaluate(int player){
   // }
   // else{ //kingSafety
     //int kingSafety = 0;
-    //int threats = State::countThreats(oppn_board, self_board, kingRow, kingCol);
+    int threats = State::countThreats(oppn_board, self_board, kingRow, kingCol);
     //kingSafety -= threats;
     //score = score - self_undev*2 + oppn_undev*2;
-    //score -= threats * 10;
+    score -= threats * 10;
   // }
 
   return score;
