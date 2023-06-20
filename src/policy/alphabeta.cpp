@@ -17,11 +17,11 @@ Move Alphabeta::get_move(State *state, int depth, int player){
   if(!state->legal_actions.size())
     state->get_legal_actions();
   
-  int maximizing_value = Alphabeta::alphabeta(state, depth, INT32_MIN, INT32_MAX, player, player);
+  int maximizing_value = Alphabeta::alphabeta(state, depth, INT32_MIN, INT32_MAX, player);
   return state->prev_move;
 }
 
-int Alphabeta::alphabeta(State *state, int depth, int alpha, int beta, int maximizingPlayer, int rootplayer){
+int Alphabeta::alphabeta(State *state, int depth, int alpha, int beta, int maximizingPlayer){
   if(!state->legal_actions.size())
     state->get_legal_actions();
   
@@ -34,15 +34,15 @@ int Alphabeta::alphabeta(State *state, int depth, int alpha, int beta, int maxim
   }
 
   if(depth == 0 || state->game_state == WIN){
-    return state->evaluate(rootplayer);
+    return state->evaluate(maximizingPlayer);
   }
-  if(maximizingPlayer){
+  if(state->player == maximizingPlayer){
     for(Move actions: state->legal_actions){
       State *next_state = state->next_state(actions);
       next_state->prev_move = actions;
-      int val = alphabeta(next_state, depth-1, alpha, beta, 1-maximizingPlayer, rootplayer);
+      int val = alphabeta(next_state, depth-1, alpha, beta, maximizingPlayer);
       //if(val >= bestValue && depth == 3) state->prev_move = next_state->prev_move;
-      if(alpha < val && depth == 3) state->prev_move = next_state->prev_move;
+      if(alpha < val && depth == 4) state->prev_move = next_state->prev_move;
       alpha = std::max(alpha, val);
       if(alpha >= beta) break;
     }
@@ -52,9 +52,9 @@ int Alphabeta::alphabeta(State *state, int depth, int alpha, int beta, int maxim
     for(Move actions: state->legal_actions){
       State *next_state = state->next_state(actions);
       next_state->prev_move = actions;
-      int val = alphabeta(next_state, depth-1, alpha, beta, maximizingPlayer, rootplayer);
+      int val = alphabeta(next_state, depth-1, alpha, beta, maximizingPlayer);
       //if(val <= bestValue && depth == 3) state->prev_move = next_state->prev_move;
-      if(beta > val && depth == 3) state->prev_move = next_state->prev_move;
+      if(beta > val && depth == 4) state->prev_move = next_state->prev_move;
       beta = std::min(beta, val);
       if(beta <= alpha) break;
     }

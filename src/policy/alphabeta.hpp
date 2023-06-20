@@ -10,5 +10,5 @@
 class Alphabeta{
 public:
   static Move get_move(State *state, int depth, int player);
-  static int alphabeta(State *state, int depth, int alpha, int beta, int maxmizingPlayer, int rootplayer);
+  static int alphabeta(State *state, int depth, int alpha, int beta, int maxmizingPlayer);
 };
